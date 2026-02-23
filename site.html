@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Freeway Cost Calculator</title>
+
+<style>
+/* Typography */
+h1, h2, summary {
+  font-family: Georgia, serif;
+  font-weight: bold;
+}
+
+body, label, input, span {
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+/* Layout & Colors */
+body{
+  margin:40px;
+  background:#f4f6f8;
+  color:#0C2340;
+}
+
+.section{
+  background:white;
+  padding:20px;
+  margin-bottom:20px;
+  border-radius:10px;
+  border:1px solid #A7C6ED;
+  box-shadow:0 0 10px rgba(0,0,0,0.08);
+}
+
+details {
+  margin-bottom: 15px;
+  border: 1px solid #A7C6ED;
+  border-radius: 8px;
+  padding: 10px;
+  background: #ffffff;
+}
+
+summary {
+  cursor: pointer;
+  font-size: 18px;
+  color: #0C2340;
+}
+
+input[type="number"]{
+  width:80px;
+}
+
+/* Floating Gauge + Always-visible Totals */
+#floatingGaugeContainer {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  background: rgba(255,255,255,0.95);
+  border: 2px solid #A7C6ED;
+  border-radius: 50px;
+  padding: 10px 20px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.15);
+  z-index: 9999;
+}
+
+#floatingGauge {
+  width: 80px;
+  height: 80px;
+  position: relative;
+}
+
+#floatingGauge svg {
+  width: 80px;
+  height: 80px;
+}
+
+#floatingGaugeText {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-family:Georgia;
+  font-weight:bold;
+  font-size:16px;
+  color:#0C2340;
+}
+
+#floatingTotals {
+  display:flex;
+  flex-direction:column;
+  font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>STRONG TOWNS YXE Freeway Cost Calculator</h1>
+
+<!-- ========================= -->
+<!-- ROAD IMPROVEMENTS -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Road Improvements (Capital)</h2>
+
+  <label><input type="checkbox" id="checkAllRoads" onchange="toggleAllRoads()"> <b>Select All Road Improvements</b></label>
+  <br><br>
+
+  <details open>
+    <summary>Active Transportation</summary>
+    <div id="roads-active"></div>
+  </details>
+
+  <details open>
+    <summary>Major Roadways & Interchanges</summary>
+    <div id="roads-major"></div>
+  </details>
+
+  <details open>
+    <summary>Rail Grade Separations & Crossings</summary>
+    <div id="roads-rail"></div>
+  </details>
+
+  <details open>
+    <summary>Safety, Lighting & Misc</summary>
+    <div id="roads-misc"></div>
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li><a href="https://pub-saskatoon.escribemeetings.com/filestream.ashx?DocumentId=183863" target="_blank">
+        Road Network Improvements Capital Plan
+      </a></li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- PEDESTRIAN IMPROVEMENTS -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Pedestrian Improvements</h2>
+
+  <details open>
+    <summary>Pedestrian Infrastructure</summary>
+
+    <label><input type="number" value="0" data-cost="100000" onchange="calculate()"> Pedestrian Signals ($100,000)</label><br>
+    <label><input type="number" value="0" data-cost="25000" onchange="calculate()"> RRFB Crossing ($25,000)</label><br>
+    <label><input type="number" value="0" data-cost="25000" onchange="calculate()"> APC Crossing ($25,000)</label><br>
+
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li><a href="https://pub-saskatoon.escribemeetings.com/filestream.ashx?DocumentId=194359" target="_blank">
+        Pedestrian & Cyclist Actuated Signals Report
+      </a></li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- TRANSIT -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Transit</h2>
+
+  <details open>
+    <summary>Transit Capital</summary>
+
+    <label><input type="number" value="0" data-cost="1000000" onchange="calculate()"> 40 ft Diesel Bus ($1,000,000)</label><br>
+    <label><input type="number" value="0" data-cost="1400000" onchange="calculate()"> 60 ft Articulated Bus ($1,400,000)</label><br>
+    <label><input type="number" value="0" data-cost="2000000" onchange="calculate()"> Electric Bus ($2,000,000)</label><br>
+    <label><input type="number" value="0" data-cost="210000" onchange="calculate()"> Access Transit Bus ($210,000)</label><br>
+
+  </details>
+
+  <details open>
+    <summary>Transit Operating</summary>
+
+    <label><input type="checkbox" data-yearly="41000000" onchange="calculate()"> Double Transit Funding ($41M/year)</label><br>
+    <label><input type="number" value="0" data-yearly="200" onchange="calculate()"> ECO-Pass ($200/year)</label><br>
+
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li><a href="https://pub-saskatoon.escribemeetings.com/filestream.ashx?DocumentId=229179" target="_blank">
+        Saskatoon Transit Fleet Renewal Report
+      </a></li>
+      <li><a href="https://saskatoontransit.ca/files/transit/documents/TC-TR_AnnualReport2024-online.pdf" target="_blank">
+        Saskatoon Transit Annual Report 2024
+      </a></li>
+      <li><a href="https://saskatoontransit.ca/fares-passes/eco-pass" target="_blank">
+        ECO‑Pass Program
+      </a></li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- EMERGENCY SERVICES -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Emergency Services</h2>
+
+  <details open>
+    <summary>Emergency Operating</summary>
+    <label><input type="number" value="0" data-yearly="87500" onchange="calculate()"> Firefighters ($87,500/year)</label><br>
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li><a href="https://pub-saskatoon.escribemeetings.com/filestream.ashx?DocumentId=189229" target="_blank">
+        Fire Services Staffing Report
+      </a></li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- URBAN FORESTRY -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Urban Forestry</h2>
+
+  <details open>
+    <summary>Tree Program</summary>
+    <label><input type="number" value="0" data-yearly="69.40" onchange="calculate()"> Trees ($69.40/year)</label><br>
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li>City of Saskatoon Urban Forestry Program</li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- INSTITUTIONAL -->
+<!-- ========================= -->
+<div class="section">
+  <h2>Institutional Infrastructure</h2>
+
+  <details open>
+    <summary>Institutional Capital</summary>
+
+    <label><input type="number" value="0" data-cost="65000000" onchange="calculate()"> East Leisure Centre ($65M)</label><br>
+    <label><input type="number" value="0" data-cost="65000000" onchange="calculate()"> Joint-Use Elementary School ($65M)</label><br>
+    <label><input type="checkbox" data-cost="21000000" onchange="calculate()"> White Buffalo Lodge ($21M)</label><br>
+  </details>
+
+  <details>
+    <summary>Sources</summary>
+    <ul>
+      <li><a href="https://pub-saskatoon.escribemeetings.com/filestream.ashx?DocumentId=248083" target="_blank">
+        East Leisure Centre Report
+      </a></li>
+      <li><a href="https://globalnews.ca/news/9532068/saskatoon-white-buffalo-youth-lodge-seeks-new-building/" target="_blank">
+        White Buffalo Youth Lodge News Article
+      </a></li>
+      <li><a href="https://www.saskatchewan.ca/government/news-and-media/2023/october/04/shovels-are-in-the-ground-for-the-new-joint-use-school-facility-in-north-regina" target="_blank">
+        Joint‑Use Elementary School Announcement
+      </a></li>
+    </ul>
+  </details>
+</div>
+
+<!-- ========================= -->
+<!-- FLOATING GAUGE + ALWAYS-VISIBLE TOTALS -->
+<!-- ========================= -->
+
+<div id="floatingGaugeContainer">
+
+  <div id="floatingGauge">
+    <svg width="80" height="80">
+      <circle cx="40" cy="40" r="32" stroke="#A7C6ED" stroke-width="8" fill="none" />
+      <circle id="gaugeFill" cx="40" cy="40" r="32"
+        stroke="#0C2340" stroke-width="8" fill="none"
+        stroke-linecap="round"
+        transform="rotate(-90 40 40)"
+        stroke-dasharray="201"
+        stroke-dashoffset="201" />
+    </svg>
+    <div id="floatingGaugeText">0%</div>
+  </div>
+
+  <div id="floatingTotals">
+    <span>Total: $<span id="total">0</span></span>
+    <span>Remaining: $<span id="remaining">3000000000</span></span>
+  </div>
+
+</div>
+
+<script>
+const budget = 3000000000;
+const years = 30;
+
+// Road categories
+const roadCategories = {
+  active: [
+    ["Connecting Downtown AT Network",11000000],
+    ["19th St Cycling/Walking",6600000],
+    ["14th St Walking/Cycling",1100000],
+    ["Active Transportation Corridors",49900000],
+    ["Avenue C Walking/Cycling",8800000],
+    ["Millar Ave Walking/Cycling",4400000],
+    ["Victoria Walking/Cycling (Taylor–Ruth)",600000],
+    ["31st Walking/Cycling",3500000],
+    ["Assiniboine AT Rail Crossing",700000],
+    ["Victoria Walking/Cycling (8th–Taylor)",6800000],
+    ["West Central Multi-use Corridor",1600000],
+    ["Sidewalk Infill (31 km)",20500000]
+  ],
+
+  major: [
+    ["Imagine Idylwyld",15800000],
+    ["Circle Dr Laurier–Airport + Interchange",83300000],
+    ["Circle Dr Clancy–Laurier + 11th St Rail Grade",486000000],
+    ["Interchange Hwy 16 & Marquis",47500000],
+    ["Interchange Marquis & Idylwyld",47500000],
+    ["17th St Extension",10100000],
+    ["Interchange Circle & Idylwyld",47500000],
+    ["33rd St River Crossing",42100000],
+    ["Circle Dr Idylwyld–Warman",17000000],
+    ["Interchange Circle & Warman",47500000],
+    ["22nd & Confederation Improvements",1600000],
+    ["Widen 22nd (Diefenbaker–Neault)",20100000],
+    ["51st & Millar Intersection",2200000],
+    ["Circle Dr Clarence–Hwy 11",30700000],
+    ["Circle Dr 8th–Hwy 16",29600000],
+    ["Circle Dr Attridge–College",25400000],
+    ["Circle Dr College–8th",18100000],
+    ["Hwy 16 (Hwy 11–Zimmerman)",50100000],
+    ["Idylwyld 51st–71st",34300000],
+    ["Idylwyld 71st–Freeway",34300000]
+  ],
+
+  rail: [
+    ["Avenue N Rail Crossing + Pathway",5000000],
+    ["Rail Crossing Improvements",1000000],
+    ["Rail Grade Separation Preston & CPR",26500000],
+    ["Rail Grade Separation Marquis CNR",23100000],
+    ["Rail Grade Separation Lorne",42100000],
+    ["RR Grade Separation 8th/Holmwood",38500000],
+    ["Hwy 11 & 16 Cloverleaf",294000000],
+    ["Range Road 3051 Rail Upgrades",200000]
+  ],
+
+  misc: [
+    ["Median Circle North Bridge–College",1000000],
+    ["Roadside Safety Priorities",1100000],
+    ["Intelligent Transportation System Plan",1700000],
+    ["Hwy 16 Illumination",2600000]
+  ]
+};
+
+// Build road checkboxes
+function buildRoads(){
+  for(const cat in roadCategories){
+    const container = document.getElementById("roads-" + cat);
+    roadCategories[cat].forEach(([name,cost])=>{
+      const row = document.createElement("label");
+      row.innerHTML = `<input type="checkbox" class="roadbox" data-cost="${cost}" onchange="calculate()"> ${name} ($${cost.toLocaleString()})`;
+      container.appendChild(row);
+      container.appendChild(document.createElement("br"));
+    });
+  }
+}
+
+buildRoads();
+
+function toggleAllRoads(){
+  const checked = document.getElementById("checkAllRoads").checked;
+  document.querySelectorAll(".roadbox").forEach(cb => cb.checked = checked);
+  calculate();
+}
+
+function updateGauge(total) {
+  const percent = Math.min((total / budget) * 100, 150);
+  const circle = document.getElementById("gaugeFill");
+  const text = document.getElementById("floatingGaugeText");
+
+  const circumference = 201;
+  const clamped = Math.min(percent, 100);
+  const offset = circumference - (circumference * clamped / 100);
+
+  circle.style.strokeDashoffset = offset;
+
+  if (percent <= 60) circle.style.stroke = "#2ecc71";
+  else if (percent <= 90) circle.style.stroke = "#f1c40f";
+  else if (percent <= 100) circle.style.stroke = "#e67e22";
+  else circle.style.stroke = "#e74c3c";
+
+  text.textContent = Math.floor(percent) + "%";
+}
+
+function calculate(){
+  let total = 0;
+
+  document.querySelectorAll("input").forEach(input=>{
+    if(input.type=="checkbox" && input.checked){
+      if(input.dataset.cost) total += Number(input.dataset.cost);
+      if(input.dataset.yearly) total += Number(input.dataset.yearly) * years;
+    }
+
+    if(input.type=="number"){
+      let qty = Number(input.value);
+
+      if(input.dataset.cost)
+        total += qty * Number(input.dataset.cost);
+
+      if(input.dataset.yearly)
+        total += qty * Number(input.dataset.yearly) * years;
+    }
+  });
+
+  document.getElementById("total").innerText = total.toLocaleString();
+  document.getElementById("remaining").innerText = (budget-total).toLocaleString();
+
+  updateGauge(total);
+}
+
+calculate();
+</script>
+
+</body>
+</html>
