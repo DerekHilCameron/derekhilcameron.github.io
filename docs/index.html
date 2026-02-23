@@ -61,20 +61,20 @@ input[type="number"]{
   background: rgba(255,255,255,0.95);
   border: 2px solid #A7C6ED;
   border-radius: 50px;
-  padding: 10px 20px;
+  padding: 20px 30px; /* increased for larger gauge */
   box-shadow: 0 0 12px rgba(0,0,0,0.15);
   z-index: 9999;
 }
 
 #floatingGauge {
-  width: 80px;
-  height: 80px;
+  width: 160px;   /* doubled */
+  height: 160px;  /* doubled */
   position: relative;
 }
 
 #floatingGauge svg {
-  width: 80px;
-  height: 80px;
+  width: 160px;   /* doubled */
+  height: 160px;  /* doubled */
 }
 
 #floatingGaugeText {
@@ -84,15 +84,16 @@ input[type="number"]{
   transform:translate(-50%, -50%);
   font-family:Georgia;
   font-weight:bold;
-  font-size:16px;
+  font-size:32px; /* doubled */
   color:#0C2340;
 }
 
 #floatingTotals {
   display:flex;
   flex-direction:column;
-  font-size:16px;
+  font-size:20px; /* optional bump for balance */
 }
+
 </style>
 </head>
 
