@@ -279,26 +279,20 @@ input[type="number"]{
 <!-- ========================= -->
 
 <div id="floatingGaugeContainer">
-
-  <div id="floatingGauge">
-    <svg width="150" height="150">
-      <circle cx="75" cy="75" r="60" stroke="#A7C6ED" stroke-width="12" fill="none" />
-      <circle id="gaugeFill" cx="75" cy="75" r="60"
+<div id="floatingGauge">
+    <svg width="80" height="80">
+      <circle cx="40" cy="40" r="32" stroke="#A7C6ED" stroke-width="8" fill="none" />
+      <circle id="gaugeFill" cx="40" cy="40" r="32"
         stroke="#0C2340" stroke-width="8" fill="none"
         stroke-linecap="round"
         transform="rotate(-90 40 40)"
-        stroke-dasharray="377"
-        stroke-dashoffset="377" />
+        stroke-dasharray="201"
+        stroke-dashoffset="201" />
     </svg>
-    <div id="floatingGaugeText">28px</div>
+    <div id="floatingGaugeText">0%</div>
   </div>
-
-  <div id="floatingTotals">
-    <span>Total: $<span id="total">0</span></span>
-    <span>Remaining: $<span id="remaining">3000000000</span></span>
+<div id="floatingGaugeContainer">
   </div>
-
-</div>
 
 <script>
 const budget = 3000000000;
